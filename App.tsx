@@ -1,118 +1,62 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
-
 import React from 'react';
-import type {PropsWithChildren} from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import Signup from './screens/Signup';
+import Login from './screens/Login';
+import Home from './screens/Home';
+import Footer from './components/Footer';
+import Profile from './screens/Profile';
+import Budgets from './screens/Budgets';
+import AddBudget from './screens/AddBudget';
+import Settings from './screens/Settings';
+import BudgetDetails from './screens/BudgetDetails';
+import SelectCategories from './screens/SelectCategories';
+import ForgotPassword from './screens/ForgotPassword';
+import Savings from './screens/Savings';
+import NotificationsAlerts from './screens/NotificationsAlerts';
+import DataExport from './screens/DataExport';
+import Coaching from './screens/Coaching';
+import Support from './screens/Support';
+import FAQ from './screens/FAQ';
+import BankAccounts from './screens/BankAccounts';
+import CurrencySettings from './screens/CurrencySettings';
+import SecuritySettings from './screens/SecuritySettings';
+import Subscription from './screens/Subscription';
+import ProfileSettings from './screens/ProfileSettings';
+import Logout from './screens/Logout';
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+const Stack = createNativeStackNavigator();
 
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
-
-function Section({children, title}: SectionProps): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
+const App = () => {
   return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName="Login">
+        <Stack.Screen name="Home" component={Home} options={{ headerShown: false }} />
+        <Stack.Screen name="Profile" component={Profile} options={{ headerShown: false }} />
+        <Stack.Screen name="Budgets" component={Budgets} options={{ headerShown: false }} />
+        <Stack.Screen name="AddBudget" component={AddBudget} options={{ headerShown: false }} />
+        <Stack.Screen name="Settings" component={Settings} options={{ headerShown: false }} />
+        <Stack.Screen name="BudgetDetails" component={BudgetDetails} options={{ headerShown: false }} />
+        <Stack.Screen name="SelectCategories" component={SelectCategories} options={{ headerShown: false }} />
+        <Stack.Screen name="Login" component={Login} options={{ headerShown: false }} />
+        <Stack.Screen name="Signup" component={Signup} options={{ headerShown: false }} />
+        <Stack.Screen name="ForgotPassword" component={ForgotPassword} options={{ headerShown: false }} />
+        <Stack.Screen name="Savings" component={Savings} options={{ headerShown: false }} />
+        <Stack.Screen name="NotificationsAlerts" component={NotificationsAlerts} options={{ headerShown: false }} />
+        <Stack.Screen name="DataExport" component={DataExport} options={{ headerShown: false }} />
+        <Stack.Screen name="Coaching" component={Coaching} options={{ headerShown: false }} />
+        <Stack.Screen name="Support" component={Support} options={{ headerShown: false }} />
+        <Stack.Screen name="FAQ" component={FAQ} options={{ headerShown: false }} />
+        <Stack.Screen name="BankAccounts" component={BankAccounts} options={{ headerShown: false }} />
+        <Stack.Screen name="CurrencySettings" component={CurrencySettings} options={{ headerShown: false }} />
+        <Stack.Screen name="SecuritySettings" component={SecuritySettings} options={{ headerShown: false }} />
+        <Stack.Screen name="Subscription" component={Subscription} options={{ headerShown: false }} />
+        <Stack.Screen name="ProfileSettings" component={ProfileSettings} options={{ headerShown: false }} />
+        <Stack.Screen name="Logout" component={Logout} options={{ headerShown: false }} />
+      </Stack.Navigator>
+      <Footer />
+    </NavigationContainer>
   );
-}
-
-function App(): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
-
-  return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
-    </SafeAreaView>
-  );
-}
-
-const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-});
+};
 
 export default App;
