@@ -116,6 +116,7 @@ export const getExpensesByBudget = async (budgetId) => {
   }
 };
 
+
 // Créer un budget
 export const createBudget = async (budgetData) => {
   try {

@@ -8,7 +8,7 @@ const Savings = ({ navigation }) => {
   const [date, setDate] = useState(new Date());
   const [budgets, setBudgets] = useState([]);
   const [selectedBudget, setSelectedBudget] = useState(null);
-
+ 
   useEffect(() => {
     const fetchBudgets = async () => {
       try {
