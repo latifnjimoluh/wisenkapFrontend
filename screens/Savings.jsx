@@ -1,13 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Image, TextInput, Alert } from 'react-native';
-import DateTimePicker from '@react-native-community/datetimepicker';
-import { getUserDetails, getBudgets, createSaving } from '../api'; // Assurez-vous que createSaving est importé correctement
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, TextInput, Alert } from 'react-native';
+import { getBudgets, createSaving } from '../api';
 import { Picker } from '@react-native-picker/picker';
 
 const Savings = ({ navigation }) => {
   const [amount, setAmount] = useState('');
   const [date, setDate] = useState(new Date());
-  const [showDatePicker, setShowDatePicker] = useState(false);
   const [budgets, setBudgets] = useState([]);
   const [selectedBudget, setSelectedBudget] = useState(null);
 
@@ -36,20 +34,11 @@ const Savings = ({ navigation }) => {
     try {
       await createSaving({ budgetId: selectedBudget, amount, date });
       Alert.alert('Succès', 'Épargne ajoutée avec succès.');
+      navigation.navigate('Home');
     } catch (error) {
       console.error('Erreur lors de l\'ajout de l\'épargne:', error);
       Alert.alert('Erreur', 'Erreur lors de l\'ajout de l\'épargne.');
     }
-  };
-
-  const onChangeDate = (event, selectedDate) => {
-    const currentDate = selectedDate || date;
-    setShowDatePicker(false);
-    setDate(currentDate);
-  };
-
-  const showDatepicker = () => {
-    setShowDatePicker(true);
   };
 
   return (
@@ -83,29 +72,21 @@ const Savings = ({ navigation }) => {
 
       <View style={styles.inputContainer}>
         <Text style={styles.label}>Date</Text>
-        <TouchableOpacity onPress={showDatepicker}>
-          <TextInput
-            style={styles.input}
-            placeholder="JJ/MM/AAAA"
-            placeholderTextColor="#8E8E93"
-            value={date.toLocaleDateString()}
-            editable={false}
-          />
-        </TouchableOpacity>
-      </View>
-
-      {showDatePicker && (
-        <DateTimePicker
-          testID="dateTimePicker"
-          value={date}
-          mode="date"
-          display="default"
-          onChange={onChangeDate}
+        <TextInput
+          style={styles.input}
+          placeholder="JJ/MM/AAAA"
+          placeholderTextColor="#8E8E93"
+          value={date.toLocaleDateString()}
+          editable={false}
         />
-      )}
+      </View>
 
       <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
         <Text style={styles.saveButtonText}>Épargner</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity style={styles.historyButton} onPress={() => navigation.navigate('SavingsHistory')}>
+        <Text style={styles.historyButtonText}>Voir l'historique des épargnes</Text>
       </TouchableOpacity>
     </ScrollView>
   );
@@ -157,6 +138,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   saveButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  historyButton: {
+    backgroundColor: '#005D8C',
+    paddingVertical: 15,
+    borderRadius: 5,
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  historyButtonText: {
     color: 'white',
     fontSize: 16,
     fontWeight: 'bold',

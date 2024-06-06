@@ -169,3 +169,40 @@ export const createTransactions = async (budgetId, transactions) => {
     throw error.response ? error.response.data : error.message;
   }
 };
+
+// Ajouter une épargne
+export const createSaving = async (savingData) => {
+  try {
+    console.log('Demande d\'ajout d\'épargne:', savingData);
+    const response = await axios.post(`${API_BASE_URL}/savings`, savingData, {
+      withCredentials: true,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    console.log('Réponse d\'ajout d\'épargne:', response.data);
+    return response.data;
+  } catch (error) {
+    console.error('Erreur lors de l\'ajout de l\'épargne:', error.response ? error.response.data : error.message);
+    throw error.response ? error.response.data : error.message;
+  }
+};
+
+// Récupérer l'historique des épargnes
+export const getSavingsHistory = async () => {
+    try {
+      console.log('Demande de récupération de l\'historique des épargnes');
+      const response = await axios.get(`${API_BASE_URL}/savings`, {
+        withCredentials: true,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      console.log('Réponse de récupération de l\'historique des épargnes:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('Erreur lors de la récupération de l\'historique des épargnes:', error.response ? error.response.data : error.message);
+      throw error.response ? error.response.data : error.message;
+    }
+  };
+  

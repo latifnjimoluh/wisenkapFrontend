@@ -24,6 +24,7 @@ import SecuritySettings from './screens/SecuritySettings';
 import Subscription from './screens/Subscription';
 import ProfileSettings from './screens/ProfileSettings';
 import Logout from './screens/Logout';
+import SavingsHistory from './screens/SavingsHistory';
 
 const Stack = createNativeStackNavigator();
 
@@ -52,6 +53,7 @@ const App = () => {
         <Stack.Screen name="SecuritySettings" component={SecuritySettings} options={{ headerShown: false }} />
         <Stack.Screen name="Subscription" component={Subscription} options={{ headerShown: false }} />
         <Stack.Screen name="ProfileSettings" component={ProfileSettings} options={{ headerShown: false }} />
+        <Stack.Screen name="SavingsHistory" component={SavingsHistory} options={{ headerShown: false }} />
         <Stack.Screen name="Logout" component={Logout} options={{ headerShown: false }} />
       </Stack.Navigator>
       <Footer />
