@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, Switch, TouchableOpacity, StyleSheet, ScrollView, TextInput, Alert } from 'react-native';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
+import PushNotification from 'react-native-push-notification';
 import { getAlerts, createAlert, updateAlert, deleteAlert } from '../api';
 
 const NotificationsAlerts = ({
@@ -15,6 +16,21 @@ const NotificationsAlerts = ({
   const [alerts, setAlerts] = useState(initialAlerts);
   const [isDatePickerVisible, setDatePickerVisibility] = useState(initialIsDatePickerVisible);
   const [currentAlertIndex, setCurrentAlertIndex] = useState(initialCurrentAlertIndex);
+
+  useEffect(() => {
+    if (Platform.OS === 'android') {
+      PushNotification.createChannel(
+        {
+          channelId: "alerts-channel",
+          channelName: "Alerts Channel",
+          channelDescription: "A channel to categorize your alert notifications",
+          importance: 4,
+          vibrate: true,
+        },
+        (created) => console.log(`createChannel returned '${created}'`)
+      );
+    }
+  }, []);
 
   const toggleSwitch = () => setIsEnabled(prevState => !prevState);
 
@@ -33,11 +49,13 @@ const NotificationsAlerts = ({
     const newAlerts = [...alerts];
     newAlerts[currentAlertIndex].time = `${hours}:${minutes}`;
     setAlerts(newAlerts);
+    scheduleNotification(newAlerts[currentAlertIndex]);
     hideDatePicker();
   };
 
   const addAlert = () => {
-    setAlerts([...alerts, { time: '', comment: '', isActive: true }]);
+    const newAlert = { id: Date.now().toString(), time: '', comment: '', isActive: true };
+    setAlerts([...alerts, newAlert]);
   };
 
   const updateAlertComment = (index, comment) => {
@@ -50,6 +68,11 @@ const NotificationsAlerts = ({
     const newAlerts = [...alerts];
     newAlerts[index].isActive = !newAlerts[index].isActive;
     setAlerts(newAlerts);
+    if (newAlerts[index].isActive) {
+      scheduleNotification(newAlerts[index]);
+    } else {
+      cancelNotification(newAlerts[index]);
+    }
   };
 
   const saveAlerts = async () => {
@@ -58,7 +81,11 @@ const NotificationsAlerts = ({
         if (alert.id) {
           await updateAlert(alert.id, alert);
         } else {
-          await createAlert(alert);
+          const createdAlert = await createAlert(alert);
+          alert.id = createdAlert.id;
+        }
+        if (alert.isActive) {
+          scheduleNotification(alert);
         }
       }
       Alert.alert('Succès', 'Alertes enregistrées avec succès.');
@@ -72,6 +99,7 @@ const NotificationsAlerts = ({
     try {
       await deleteAlert(alertId);
       setAlerts(alerts.filter(alert => alert.id !== alertId));
+      cancelNotification({ id: alertId });
       Alert.alert('Succès', 'Alerte supprimée avec succès.');
     } catch (error) {
       console.error('Erreur lors de la suppression de l\'alerte:', error);
@@ -79,19 +107,28 @@ const NotificationsAlerts = ({
     }
   };
 
-  useEffect(() => {
-    const fetchAlerts = async () => {
-      try {
-        const response = await getAlerts();
-        setAlerts(response);
-      } catch (error) {
-        console.error('Erreur lors de la récupération des alertes:', error);
-        Alert.alert('Erreur', 'Erreur lors de la récupération des alertes.');
-      }
-    };
+  const scheduleNotification = (alert) => {
+    const [hours, minutes] = alert.time.split(':').map(Number);
+    const now = new Date();
+    const notificationTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), hours, minutes, 0);
 
-    fetchAlerts();
-  }, []);
+    if (notificationTime <= now) {
+      notificationTime.setDate(notificationTime.getDate() + 1);
+    }
+
+    PushNotification.localNotificationSchedule({
+      id: alert.id.toString(),
+      channelId: "alerts-channel",
+      title: "Alerte",
+      message: alert.comment || "Notification de votre alerte",
+      date: notificationTime,
+      allowWhileIdle: true,
+    });
+  };
+
+  const cancelNotification = (alert) => {
+    PushNotification.cancelLocalNotifications({ id: alert.id.toString() });
+  };
 
   return (
     <ScrollView style={styles.container}>
