@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Alert, TouchableOpacity } from 'react-native';
 import { getSavingsHistory } from '../api';
 
-const SavingsHistory = () => {
+const SavingsHistory = ({ navigation }) => {
   const [savingsHistory, setSavingsHistory] = useState([]);
 
   useEffect(() => {
@@ -20,15 +20,19 @@ const SavingsHistory = () => {
   }, []);
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
       <Text style={styles.header}>Historique des épargnes</Text>
       {savingsHistory.map((saving, index) => (
         <View key={index} style={styles.savingContainer}>
-          <Text style={styles.text}>Budget: {saving.budgetCategory}</Text>
-          <Text style={styles.text}>Montant: {saving.amount} FCFA</Text>
-          <Text style={styles.text}>Date: {new Date(saving.date).toLocaleDateString()}</Text>
+          <Text style={styles.text}><Text style={styles.label}>Budget: </Text>{saving.budgetCategory}</Text>
+          <Text style={styles.text}><Text style={styles.label}>Montant: </Text>{saving.amount} FCFA</Text>
+          <Text style={styles.text}><Text style={styles.label}>Date: </Text>{new Date(saving.date).toLocaleDateString()}</Text>
         </View>
       ))}
+      
+      <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+        <Text style={styles.backButtonText}>Retour</Text>
+      </TouchableOpacity>
     </ScrollView>
   );
 };
@@ -37,7 +41,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'white',
+  },
+  contentContainer: {
     padding: 20,
+    paddingBottom: 40, // Assure que le bouton n'est pas collé au bas de l'écran
   },
   header: {
     fontSize: 24,
@@ -56,6 +63,23 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#1A1A1A',
     marginBottom: 5,
+  },
+  label: {
+    fontWeight: 'bold',
+  },
+  backButton: {
+    backgroundColor: '#005D8C',
+    paddingVertical: 15,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginTop: 20,
+    alignSelf: 'center',
+    width: '50%', // Assure que le bouton est centré et de taille appropriée
+  },
+  backButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });
 

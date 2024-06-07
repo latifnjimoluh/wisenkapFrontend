@@ -3,7 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView, Scro
 import CheckBox from '@react-native-community/checkbox';
 import { Picker } from '@react-native-picker/picker';
 import { getBudgets, getExpensesByBudget, createTransactions } from '../api';
- 
+
 const SelectCategories = ({ navigation }) => {
   const [budgets, setBudgets] = useState([]);
   const [selectedBudget, setSelectedBudget] = useState(null);
@@ -159,6 +159,10 @@ const SelectCategories = ({ navigation }) => {
         <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
           <Text style={styles.submitButtonText}>Valider</Text>
         </TouchableOpacity>
+
+          <TouchableOpacity style={styles.historyButton} onPress={() => navigation.navigate('TransactionHistory')}>
+            <Text style={styles.historyButtonText}>Historique des transactions</Text>
+          </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
   );
@@ -260,6 +264,18 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   submitButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  historyButton: {
+    backgroundColor: '#00A8E8',
+    paddingVertical: 15,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  historyButtonText: {
     color: 'white',
     fontSize: 16,
     fontWeight: 'bold',

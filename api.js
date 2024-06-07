@@ -207,3 +207,72 @@ export const getSavingsHistory = async () => {
     }
   };
   
+  // Récupérer l'historique des transactions
+export const getTransactionHistory = async () => {
+  try {
+    console.log('Demande de récupération de l\'historique des épargnes');
+    const response = await axios.get(`${API_BASE_URL}/savings`, {
+      withCredentials: true,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    console.log('Réponse de récupération de l\'historique des épargnes:', response.data);
+    return response.data;
+  } catch (error) {
+    console.error('Erreur lors de la récupération de l\'historique des épargnes:', error.response ? error.response.data : error.message);
+    throw error.response ? error.response.data : error.message;
+  }
+};
+
+// Récupérer les alertes
+export const getAlerts = async () => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/alerts`, {
+      withCredentials: true,
+      headers: { 'Content-Type': 'application/json' },
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response ? error.response.data : error.message;
+  }
+};
+
+// Créer une alerte
+export const createAlert = async (alertData) => {
+  try {
+    const response = await axios.post(`${API_BASE_URL}/alerts`, alertData, {
+      withCredentials: true,
+      headers: { 'Content-Type': 'application/json' },
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response ? error.response.data : error.message;
+  }
+};
+
+// Mettre à jour une alerte
+export const updateAlert = async (alertId, alertData) => {
+  try {
+    const response = await axios.put(`${API_BASE_URL}/alerts/${alertId}`, alertData, {
+      withCredentials: true,
+      headers: { 'Content-Type': 'application/json' },
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response ? error.response.data : error.message;
+  }
+};
+
+// Supprimer une alerte
+export const deleteAlert = async (alertId) => {
+  try {
+    const response = await axios.delete(`${API_BASE_URL}/alerts/${alertId}`, {
+      withCredentials: true,
+      headers: { 'Content-Type': 'application/json' },
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response ? error.response.data : error.message;
+  }
+};
