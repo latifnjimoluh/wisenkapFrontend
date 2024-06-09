@@ -26,8 +26,6 @@ import ProfileSettings from './screens/ProfileSettings';
 import Logout from './screens/Logout';
 import SavingsHistory from './screens/SavingsHistory';
 import TransactionHistory from './screens/TransactionHistory';
-import './screens/PushNotificationConfig';
-
 const Stack = createNativeStackNavigator();
 
 const App = () => {
