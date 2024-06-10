@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image, ActivityIndicator, ScrollView } from 'react-native';
 import { getBudgets } from '../api'; // Assurez-vous d'avoir une fonction getBudgets dans votre fichier API
+import Footer from '../components/Footer';
 
 const Budget = ({ navigation }) => {
   const [budgets, setBudgets] = useState([]);
@@ -78,6 +79,7 @@ const Budget = ({ navigation }) => {
           )}
         </View>
       </ScrollView>
+      <Footer/>
     </View>
   );
 };

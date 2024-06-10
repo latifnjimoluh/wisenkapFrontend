@@ -3,6 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView, Scro
 import CheckBox from '@react-native-community/checkbox';
 import { Picker } from '@react-native-picker/picker';
 import { getBudgets, getExpensesByBudget, createTransactions } from '../api';
+import Footer from '../components/Footer';
 
 const SelectCategories = ({ navigation }) => {
   const [budgets, setBudgets] = useState([]);
@@ -164,6 +165,7 @@ const SelectCategories = ({ navigation }) => {
             <Text style={styles.historyButtonText}>Historique des transactions</Text>
           </TouchableOpacity>
       </ScrollView>
+      <Footer/>
     </SafeAreaView>
   );
 };

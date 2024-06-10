@@ -4,6 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { getUserDetails, updateUserDetails } from '../api';
 import { Picker } from '@react-native-picker/picker';
+import Footer from '../components/Footer';
 
 const ProfileSettings = ({ navigation }) => {
   const [email, setEmail] = useState('');
@@ -160,6 +161,7 @@ const ProfileSettings = ({ navigation }) => {
         <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
           <Text style={styles.saveButtonText}>Enregistrer</Text>
         </TouchableOpacity>
+        <Footer/>
       </View>
     </ScrollView>
   );

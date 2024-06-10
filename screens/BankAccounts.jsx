@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Modal, FlatList } from 'react-native';
 
+
 const BankAccounts = () => {
   const [modalVisible, setModalVisible] = useState(false);
 

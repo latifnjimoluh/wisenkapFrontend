@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Image, SafeAreaView, Alert } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
-import { createBudget } from '../api'; // Assure you have this import for the createBudget function from your API file.
-
+import { createBudget } from '../api';
+import Footer from '../components/Footer';
 const AddBudget = ({ navigation }) => {
   const [budgetName, setBudgetName] = useState('');
   const [period, setPeriod] = useState('mois');
@@ -226,6 +226,7 @@ const AddBudget = ({ navigation }) => {
           <Text style={styles.submitButtonText}>Créer</Text>
         </TouchableOpacity>
       </ScrollView>
+      <Footer />
     </SafeAreaView>
   );
 };

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Modal, Image, SafeAreaView, Alert } from 'react-native';
 import { createExpenses } from '../api'; // Assurez-vous d'importer la fonction API
 
+
 const BudgetDetails = ({ navigation, route }) => {
   const { budgetId } = route.params; // Assurez-vous que le budgetId est passé en tant que paramètre de route
   const [expenses, setExpenses] = useState([

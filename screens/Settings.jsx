@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Switch, Image } from 'react-native';
-
+import Footer from '../components/Footer';
 const Settings = ({ navigation }) => {
   const [isBalanceHidden, setIsBalanceHidden] = useState(false);
 
   return (
+    <View style={styles.containerr}>
     <ScrollView style={styles.container}>
       <View style={styles.headerContainer}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
@@ -58,9 +59,11 @@ const Settings = ({ navigation }) => {
         </TouchableOpacity>
       </View>
 
-      <Text style={styles.version}>version 1.0.2 (2)</Text>
+      <Text style={styles.version}>version 1.0.2</Text>
       </View>
     </ScrollView>
+      <Footer/>
+    </View>
   );
 };
 
@@ -68,6 +71,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F0F0F0',
+  },
+  containerr: {
+    flex: 1,
+    backgroundColor: 'white',
   },
   cContainer: {
     paddingHorizontal: 20,

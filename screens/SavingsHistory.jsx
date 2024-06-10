@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Alert, TouchableOpacity } from 'react-native';
 import { getSavingsHistory } from '../api';
+import Footer from '../components/Footer';
 
 const SavingsHistory = ({ navigation }) => {
   const [savingsHistory, setSavingsHistory] = useState([]);
@@ -33,6 +34,7 @@ const SavingsHistory = ({ navigation }) => {
       <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
         <Text style={styles.backButtonText}>Retour</Text>
       </TouchableOpacity>
+      <Footer/>
     </ScrollView>
   );
 };

@@ -1,8 +1,24 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import { getUserDetails } from '../api'; 
 
 const Profile = ({ navigation }) => {
-  const userName = "Nom d'utilisateur"; // Remplacez ceci par le nom de l'utilisateur connecté
+  const [userName, setUserName] = useState(''); 
+
+  useEffect(() => {
+    // Fonction pour récupérer les détails de l'utilisateur
+    const fetchUserDetails = async () => {
+      try {
+        const userDetails = await getUserDetails();
+        setUserName(userDetails.firstName || 'Utilisateur');
+      } catch (error) {
+        console.error('Erreur lors de la récupération des détails de l\'utilisateur:', error);
+        setUserName('Utilisateur'); 
+      }
+    };
+
+    fetchUserDetails();
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -61,7 +77,7 @@ const styles = StyleSheet.create({
   },
   scrollContainer: {
     paddingHorizontal: 20,
-    paddingBottom: 20, // Ajouter une marge en bas pour éviter que le contenu soit masqué par le footer
+    paddingBottom: 20,
   },
   userName: {
     fontSize: 16,

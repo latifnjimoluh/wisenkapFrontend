@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Switch, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
-
+import Footer from '../components/Footer';
 const SecuritySettings = () => {
   const [isFaceIDEnabled, setIsFaceIDEnabled] = useState(false);
   const [password, setPassword] = useState('');
@@ -58,6 +58,7 @@ const SecuritySettings = () => {
       <TouchableOpacity style={styles.saveButton} onPress={() => { }}>
         <Text style={styles.saveButtonText}>Enregistrer</Text>
       </TouchableOpacity>
+      <Footer/>
     </ScrollView>
   );
 };

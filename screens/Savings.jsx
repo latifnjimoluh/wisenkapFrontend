@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView, TextInput, Alert } from 'react-native';
 import { getBudgets, createSaving } from '../api';
 import { Picker } from '@react-native-picker/picker';
+import Footer from '../components/Footer';
 
 const Savings = ({ navigation }) => {
   const [amount, setAmount] = useState('');
@@ -42,6 +43,7 @@ const Savings = ({ navigation }) => {
   };
 
   return (
+    <View style={styles.containerr}>
     <ScrollView style={styles.container}>
       <Text style={styles.header}>Épargne</Text>
 
@@ -89,6 +91,9 @@ const Savings = ({ navigation }) => {
         <Text style={styles.historyButtonText}>Voir l'historique des épargnes</Text>
       </TouchableOpacity>
     </ScrollView>
+    <Footer/>
+    </View>
+    
   );
 };
 
@@ -97,6 +102,10 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'white',
     padding: 20,
+  },  
+  containerr: {
+    flex: 1,
+    backgroundColor: 'white',
   },
   header: {
     fontSize: 24,
