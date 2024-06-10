@@ -163,3 +163,23 @@ export const getTransactionHistory = async () => {
     throw error.response ? error.response.data : error.message;
   }
 };
+
+// Enregistrer le token de notification
+export const registerPushToken = async (token) => {
+  try {
+    const response = await axios.post(`${API_BASE_URL}/expoPushTokens`, { token });
+    return response.data;
+  } catch (error) {
+    throw error.response ? error.response.data : error.message;
+  }
+};
+
+// Envoyer une notification push
+export const sendPushNotification = async (token, message) => {
+  try {
+    const response = await axios.post(`${API_BASE_URL}/sendNotification`, { token, message });
+    return response.data;
+  } catch (error) {
+    throw error.response ? error.response.data : error.message;
+  }
+};
