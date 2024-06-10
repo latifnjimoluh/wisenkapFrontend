@@ -1,4 +1,4 @@
-// App.js
+// File: App.js
 import React, { useState, useEffect } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
@@ -6,7 +6,6 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Signup from './screens/Signup';
 import Login from './screens/Login';
 import Home from './screens/Home';
-import Footer from './components/Footer';
 import Profile from './screens/Profile';
 import Budgets from './screens/Budgets';
 import AddBudget from './screens/AddBudget';
@@ -35,26 +34,33 @@ const Stack = createNativeStackNavigator();
 
 const App = () => {
   const [isLoading, setIsLoading] = useState(true);
+  const [isPreloaderVisible, setIsPreloaderVisible] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  useEffect(() => {
-    const checkUserAuthentication = async () => {
-      try {
-        const user = await getUserDetails();
-        setIsAuthenticated(!!user);
-      } catch (error) {
-        setIsAuthenticated(false);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
+  const handlePreloaderFinished = () => {
+    setIsPreloaderVisible(false);
     checkUserAuthentication();
-  }, []);
+  };
 
-  if (isLoading) {
-    // Utiliser le préchargeur personnalisé pendant le chargement
-    return <Preloader />;
+  useEffect(() => {
+    if (!isPreloaderVisible) {
+      checkUserAuthentication();
+    }
+  }, [isPreloaderVisible]);
+
+  const checkUserAuthentication = async () => {
+    try {
+      const user = await getUserDetails();
+      setIsAuthenticated(!!user);
+    } catch (error) {
+      setIsAuthenticated(false);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  if (isLoading || isPreloaderVisible) {
+    return <Preloader onFinished={handlePreloaderFinished} />;
   }
 
   return (

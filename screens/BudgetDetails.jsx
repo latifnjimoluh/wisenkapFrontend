@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Modal, Image, SafeAreaView, Alert } from 'react-native';
-import { createExpenses } from '../api'; // Assurez-vous d'importer la fonction API
+import { createExpenses } from '../api'; 
 
 
 const BudgetDetails = ({ navigation, route }) => {
-  const { budgetId } = route.params; // Assurez-vous que le budgetId est passé en tant que paramètre de route
+  const { budgetId } = route.params; 
   const [expenses, setExpenses] = useState([
     { category: 'Loyer', amount: '1000 FCFA', image: require('../assets/loyer.png') },
     { category: 'Internet', amount: '5000 FCFA', image: require('../assets/internet.png') },
