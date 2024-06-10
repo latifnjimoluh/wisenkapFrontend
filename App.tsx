@@ -1,65 +1,112 @@
-import React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import Signup from './screens/Signup';
-import Login from './screens/Login';
-import Home from './screens/Home';
-import Footer from './components/Footer';
-import Profile from './screens/Profile';
-import Budgets from './screens/Budgets';
-import AddBudget from './screens/AddBudget';
-import Settings from './screens/Settings';
-import BudgetDetails from './screens/BudgetDetails';
-import SelectCategories from './screens/SelectCategories';
-import ForgotPassword from './screens/ForgotPassword';
-import Savings from './screens/Savings';
-import NotificationsAlerts from './screens/NotificationsAlerts';
-import DataExport from './screens/DataExport';
-import Coaching from './screens/Coaching';
-import Support from './screens/Support';
-import FAQ from './screens/FAQ';
-import BankAccounts from './screens/BankAccounts';
-import CurrencySettings from './screens/CurrencySettings';
-import SecuritySettings from './screens/SecuritySettings';
-import Subscription from './screens/Subscription';
-import ProfileSettings from './screens/ProfileSettings';
-import Logout from './screens/Logout';
-import SavingsHistory from './screens/SavingsHistory';
-import TransactionHistory from './screens/TransactionHistory';
-const Stack = createNativeStackNavigator();
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, TextInput, Button, Platform } from 'react-native';
+import messaging from '@react-native-firebase/messaging';
+import { registerPushToken, sendPushNotification } from './api';
+import firebase from '@react-native-firebase/app';
+import firebaseConfig from './firebase-config.json';
+import PushNotification from 'react-native-push-notification';
+
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+}
+
+// Créer et configurer un canal de notification pour Android
+PushNotification.createChannel(
+  {
+    channelId: "default-channel-id",
+    channelName: "Default Channel",
+    channelDescription: "Un canal par défaut",
+    playSound: true,
+    soundName: "default",
+    importance: 4,
+    vibrate: true,
+  },
+  (created) => console.log(`Channel created '${created}'`)
+);
 
 const App = () => {
+  const [token, setToken] = useState<string | null>(null);
+  const [message, setMessage] = useState<string>('');
+
+  useEffect(() => {
+    const getToken = async () => {
+      const authStatus = await messaging().requestPermission();
+      const enabled =
+        authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+        authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+
+      if (enabled) {
+        const fcmToken = await messaging().getToken();
+        setToken(fcmToken);
+        if (fcmToken) {
+          await registerPushToken(fcmToken);
+        }
+      }
+    };
+
+    // Gérer les notifications en premier plan
+    const unsubscribeForeground = messaging().onMessage(async remoteMessage => {
+      console.log('Un nouveau message FCM est arrivé !', remoteMessage);
+      PushNotification.localNotification({
+        channelId: "default-channel-id",
+        title: remoteMessage.notification?.title,
+        message: remoteMessage.notification?.body,
+        smallIcon: "ic_notification", // Icône pour les notifications
+        largeIcon: "ic_launcher", // Icône large
+      });
+    });
+
+    // Gérer les notifications en arrière-plan
+    messaging().setBackgroundMessageHandler(async remoteMessage => {
+      console.log('Message géré en arrière-plan !', remoteMessage);
+    });
+
+    getToken();
+    return () => {
+      unsubscribeForeground();
+    };
+  }, []);
+
+  const handleSendNotification = async () => {
+    if (token) {
+      await sendPushNotification(token, message);
+    }
+  };
+
   return (
-    <NavigationContainer>
-      <Stack.Navigator initialRouteName="Login">
-        <Stack.Screen name="Home" component={Home} options={{ headerShown: false }} />
-        <Stack.Screen name="Profile" component={Profile} options={{ headerShown: false }} />
-        <Stack.Screen name="Budgets" component={Budgets} options={{ headerShown: false }} />
-        <Stack.Screen name="AddBudget" component={AddBudget} options={{ headerShown: false }} />
-        <Stack.Screen name="Settings" component={Settings} options={{ headerShown: false }} />
-        <Stack.Screen name="BudgetDetails" component={BudgetDetails} options={{ headerShown: false }} />
-        <Stack.Screen name="SelectCategories" component={SelectCategories} options={{ headerShown: false }} />
-        <Stack.Screen name="Login" component={Login} options={{ headerShown: false }} />
-        <Stack.Screen name="Signup" component={Signup} options={{ headerShown: false }} />
-        <Stack.Screen name="ForgotPassword" component={ForgotPassword} options={{ headerShown: false }} />
-        <Stack.Screen name="Savings" component={Savings} options={{ headerShown: false }} />
-        <Stack.Screen name="NotificationsAlerts" component={NotificationsAlerts} options={{ headerShown: false }} />
-        <Stack.Screen name="DataExport" component={DataExport} options={{ headerShown: false }} />
-        <Stack.Screen name="Coaching" component={Coaching} options={{ headerShown: false }} />
-        <Stack.Screen name="Support" component={Support} options={{ headerShown: false }} />
-        <Stack.Screen name="FAQ" component={FAQ} options={{ headerShown: false }} />
-        <Stack.Screen name="BankAccounts" component={BankAccounts} options={{ headerShown: false }} />
-        <Stack.Screen name="CurrencySettings" component={CurrencySettings} options={{ headerShown: false }} />
-        <Stack.Screen name="SecuritySettings" component={SecuritySettings} options={{ headerShown: false }} />
-        <Stack.Screen name="Subscription" component={Subscription} options={{ headerShown: false }} />
-        <Stack.Screen name="ProfileSettings" component={ProfileSettings} options={{ headerShown: false }} />
-        <Stack.Screen name="SavingsHistory" component={SavingsHistory} options={{ headerShown: false }} />
-        <Stack.Screen name="TransactionHistory" component={TransactionHistory} options={{ headerShown: false }} />
-        <Stack.Screen name="Logout" component={Logout} options={{ headerShown: false }} />
-      </Stack.Navigator>
-      <Footer />
-    </NavigationContainer>
+    <View style={styles.container}>
+      <Text style={styles.title}>Notifications Push</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Message de notification"
+        value={message}
+        onChangeText={setMessage}
+      />
+      <Button title="Envoyer la Notification" onPress={handleSendNotification} />
+    </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+  },
+  title: {
+    fontSize: 24,
+    color: '#007bff',
+    marginBottom: 20,
+  },
+  input: {
+    height: 40,
+    borderColor: '#007bff',
+    borderWidth: 1,
+    marginBottom: 20,
+    paddingHorizontal: 10,
+    width: '80%',
+  },
+});
 
 export default App;

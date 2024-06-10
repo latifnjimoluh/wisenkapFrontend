@@ -12,7 +12,8 @@
       android:roundIcon="@mipmap/logo"
       android:allowBackup="false"
       android:theme="@style/AppTheme"
-      android:usesCleartextTraffic="true"> 
+      android:usesCleartextTraffic="true"
+    android:permission="android.permission.RECEIVE_BOOT_COMPLETED">
 
       <service
           android:name="com.dieam.reactnativepushnotification.modules.RNPushNotificationListenerService"
@@ -26,11 +27,17 @@
       <receiver
           android:name="com.dieam.reactnativepushnotification.modules.RNPushNotificationActionsReceiver"
           android:exported="true" />
-
+        <receiver
+        android:name="com.dieam.reactnativepushnotification.modules.RNPushNotificationActions"
+        android:exported="true"/>
+        <receiver
+        android:name="com.dieam.reactnativepushnotification.modules.RNPushNotificationPublisher"
+        android:exported="true"/>
       <receiver
           android:name="com.dieam.reactnativepushnotification.modules.RNPushNotificationBootEventReceiver"
           android:enabled="true"
-          android:exported="true">
+          android:exported="true"
+          android:permission="android.permission.RECEIVE_BOOT_COMPLETED">
           <intent-filter>
               <action android:name="android.intent.action.BOOT_COMPLETED" />
               <action android:name="android.intent.action.REBOOT" />
