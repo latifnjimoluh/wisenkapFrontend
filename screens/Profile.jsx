@@ -45,7 +45,7 @@ const Profile = ({ navigation }) => {
           <TouchableOpacity style={styles.item} onPress={() => navigation.navigate('Savings')}>
             <Text style={styles.itemText}>Épargne</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.item} onPress={() => navigation.navigate('NotificationsAlerts')}>
+          <TouchableOpacity style={styles.item} onPress={() => navigation.navigate('NotificationSettings')}>
             <Text style={styles.itemText}>Notifications & Alertes</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.item} onPress={() => navigation.navigate('DataExport')}>

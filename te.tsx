@@ -13,7 +13,7 @@ import BudgetDetails from './screens/BudgetDetails';
 import SelectCategories from './screens/SelectCategories';
 import ForgotPassword from './screens/ForgotPassword';
 import Savings from './screens/Savings';
-import NotificationsAlerts from './screens/NotificationsAlerts';
+import NotificationSettings from './screens/NotificationSettings';
 import DataExport from './screens/DataExport';
 import Coaching from './screens/Coaching';
 import Support from './screens/Support';
@@ -43,7 +43,7 @@ const App = () => {
         <Stack.Screen name="Signup" component={Signup} options={{ headerShown: false }} />
         <Stack.Screen name="ForgotPassword" component={ForgotPassword} options={{ headerShown: false }} />
         <Stack.Screen name="Savings" component={Savings} options={{ headerShown: false }} />
-        <Stack.Screen name="NotificationsAlerts" component={NotificationsAlerts} options={{ headerShown: false }} />
+        <Stack.Screen name="NotificationSettings" component={NotificationSettings} options={{ headerShown: false }} />
         <Stack.Screen name="DataExport" component={DataExport} options={{ headerShown: false }} />
         <Stack.Screen name="Coaching" component={Coaching} options={{ headerShown: false }} />
         <Stack.Screen name="Support" component={Support} options={{ headerShown: false }} />

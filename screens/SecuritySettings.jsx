@@ -1,6 +1,8 @@
+// SecuritySettings.js
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, Switch, TouchableOpacity, StyleSheet, ScrollView, Alert, BackHandler } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as Keychain from 'react-native-keychain';
 import Footer from '../components/Footer';
 
 const SecuritySettings = ({ navigation }) => {
@@ -10,7 +12,20 @@ const SecuritySettings = ({ navigation }) => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
-  const toggleFaceID = () => setIsFaceIDEnabled(previousState => !previousState);
+  const toggleFaceID = async () => {
+    if (isFaceIDEnabled) {
+      // Désactiver Face ID et supprimer les données biométriques
+      await Keychain.resetGenericPassword();
+    } else {
+      // Activer Face ID et sauvegarder les données biométriques
+      const storedCode = await AsyncStorage.getItem('authCode');
+      await Keychain.setGenericPassword('user', storedCode, {
+        accessControl: Keychain.ACCESS_CONTROL.BIOMETRY_ANY,
+      });
+    }
+    setIsFaceIDEnabled(previousState => !previousState);
+  };
+
   const togglePasswordVisibility = () => {
     setIsPasswordVisible(!isPasswordVisible);
   };
@@ -32,6 +47,13 @@ const SecuritySettings = ({ navigation }) => {
       }
 
       await AsyncStorage.setItem('authCode', password);
+
+      if (isFaceIDEnabled) {
+        await Keychain.setGenericPassword('user', password, {
+          accessControl: Keychain.ACCESS_CONTROL.BIOMETRY_ANY,
+        });
+      }
+
       Alert.alert('Succès', 'Code de sécurité enregistré.');
       navigation.navigate('Settings');
     } catch (error) {

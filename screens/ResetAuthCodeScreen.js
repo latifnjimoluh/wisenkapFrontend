@@ -1,4 +1,3 @@
-// ResetAuthCodeScreen.js
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { sendResetCodeEmail } from '../api';
@@ -15,7 +14,7 @@ const ResetAuthCodeScreen = ({ navigation }) => {
     try {
       await sendResetCodeEmail(email);
       Alert.alert('Succès', 'Un email avec un code de réinitialisation a été envoyé.');
-      navigation.navigate('ConfirmResetAuthCode', { email });
+      navigation.navigate('ConfirmResetAuthCode', { email }); // Transmettez l'email ici
     } catch (error) {
       Alert.alert('Erreur', 'Erreur lors de l\'envoi de l\'e-mail de réinitialisation.');
     }

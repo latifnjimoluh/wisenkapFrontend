@@ -1,7 +1,5 @@
-
 import axios from 'axios';
 const API_BASE_URL = 'http://192.168.1.114:3000';
-
 
 // Authentification
 export const signup = async (email, password) => {
@@ -10,12 +8,12 @@ export const signup = async (email, password) => {
     return response.data;
   } catch (error) {
     throw error.response ? error.response.data : error.message;
-  } 
+  }
 };
 
-export const login = async (email, password) => {
+export const login = async (email, password, fcmToken) => { // Ajout de fcmToken
   try {
-    const response = await axios.post(`${API_BASE_URL}/auth/login`, { email, password });
+    const response = await axios.post(`${API_BASE_URL}/auth/login`, { email, password, fcmToken });
     return response.data;
   } catch (error) {
     throw error.response ? error.response.data : error.message;
@@ -48,9 +46,9 @@ export const updateUserDetails = async (userDetails) => {
   }
 };
 
-export const logout = async () => {
+export const logout = async (fcmToken) => { // Ajout de fcmToken
   try {
-    const response = await axios.post(`${API_BASE_URL}/auth/logout`, {}, {
+    const response = await axios.post(`${API_BASE_URL}/auth/logout`, { fcmToken }, {
       withCredentials: true,
       headers: { 'Content-Type': 'application/json' },
     });
@@ -164,7 +162,6 @@ export const getTransactionHistory = async () => {
   }
 };
 
-
 // Supprimer un budget
 export const deleteBudget = async (budgetId) => {
   try {
@@ -241,6 +238,58 @@ export const verifyResetCode = async ({ resetCode, email }) => {
 export const updateAuthCode = async (email, resetCode, newCode) => {
   try {
     const response = await axios.post(`${API_BASE_URL}/auth/update-code`, { email, resetCode, newCode });
+    return response.data;
+  } catch (error) {
+    throw error.response ? error.response.data : error.message;
+  }
+};
+
+// Notifications: Ajouter un jeton FCM pour les notifications
+export const addFCMToken = async (token) => {
+  try {
+    const response = await axios.post(`${API_BASE_URL}/notifications/token`, { token }, {
+      withCredentials: true,
+      headers: { 'Content-Type': 'application/json' },
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response ? error.response.data : error.message;
+  }
+};
+
+// Notifications: Supprimer un jeton FCM pour les notifications
+export const removeFCMToken = async (token) => {
+  try {
+    const response = await axios.post(`${API_BASE_URL}/notifications/remove-token`, { token }, {
+      withCredentials: true,
+      headers: { 'Content-Type': 'application/json' },
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response ? error.response.data : error.message;
+  }
+};
+
+// Récupérer les préférences de notification
+export const getNotificationSettings = async () => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/notifications`, {
+      withCredentials: true,
+      headers: { 'Content-Type': 'application/json' },
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response ? error.response.data : error.message;
+  }
+};
+
+// Mettre à jour les préférences de notification
+export const updateNotificationSettings = async (settings) => {
+  try {
+    const response = await axios.put(`${API_BASE_URL}/notifications`, settings, {
+      withCredentials: true,
+      headers: { 'Content-Type': 'application/json' },
+    });
     return response.data;
   } catch (error) {
     throw error.response ? error.response.data : error.message;

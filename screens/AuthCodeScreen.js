@@ -1,6 +1,8 @@
+// AuthCodeScreen.js
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as Keychain from 'react-native-keychain';
 
 const AuthCodeScreen = ({ navigation }) => {
   const [code, setCode] = useState('');
@@ -25,14 +27,19 @@ const AuthCodeScreen = ({ navigation }) => {
     }
   };
 
-  const handleKeyPress = (digit) => {
-    if (code.length < 4) {
-      setCode(prev => prev + digit);
+  const handleBiometricAuth = async () => {
+    try {
+      const credentials = await Keychain.getGenericPassword();
+      if (credentials) {
+        const { password: storedCode } = credentials;
+        const storedCodeAsync = await AsyncStorage.getItem('authCode');
+        if (storedCodeAsync === storedCode) {
+          navigation.navigate('Home');
+        }
+      }
+    } catch (error) {
+      Alert.alert('Erreur', 'Authentification biométrique échouée.');
     }
-  };
-
-  const handleDelete = () => {
-    setCode(prev => prev.slice(0, -1));
   };
 
   return (
@@ -60,22 +67,25 @@ const AuthCodeScreen = ({ navigation }) => {
           <TouchableOpacity
             key={num}
             style={styles.key}
-            onPress={() => handleKeyPress(num.toString())}
+            onPress={() => setCode(prev => (prev + num.toString()).slice(0, 4))}
           >
             <Text style={styles.keyText}>{num}</Text>
           </TouchableOpacity>
         ))}
-        <TouchableOpacity style={styles.key} onPress={handleDelete}>
+        <TouchableOpacity style={styles.key} onPress={() => setCode(prev => prev.slice(0, -1))}>
           <Text style={styles.keyText}>⌫</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.key} onPress={() => handleKeyPress('0')}>
+        <TouchableOpacity style={styles.key} onPress={() => setCode(prev => (prev + '0').slice(0, 4))}>
           <Text style={styles.keyText}>0</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.key} onPress={handleSubmit}>
           <Text style={styles.keyText}>Entrer</Text>
         </TouchableOpacity>
       </View>
-      <TouchableOpacity onPress={() => navigation.navigate('ResetAuthCode')}>
+      <TouchableOpacity style={styles.forgotCode} onPress={handleBiometricAuth}>
+        <Text style={styles.forgotCodeText}>Utiliser Face ID</Text>
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.forgotCode} onPress={() => navigation.navigate('ResetAuthCode')}>
         <Text style={styles.forgotCodeText}>Code oublié?</Text>
       </TouchableOpacity>
     </View>
@@ -142,11 +152,13 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
   },
-  forgotCodeText: {
+  forgotCode: {
     marginTop: 20,
+  },
+  forgotCodeText: {
     color: '#1E90FF',
+    textAlign: 'center',
     fontSize: 16,
-    textDecorationLine: 'underline',
   },
 });
 

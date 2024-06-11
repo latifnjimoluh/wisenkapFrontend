@@ -156,7 +156,7 @@ const Home = ({ navigation }) => {
               <Image source={require('../assets/Epargne.png')} style={styles.iconImage} />
               <Text style={styles.featureText}>Épargne</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.featureItem} onPress={() => navigation.navigate('NotificationsAlerts')}>
+            <TouchableOpacity style={styles.featureItem} onPress={() => navigation.navigate('NotificationSettings')}>
               <Image source={require('../assets/notifications.png')} style={styles.iconImage} />
               <Text style={styles.featureText}>Notifications</Text>
             </TouchableOpacity>

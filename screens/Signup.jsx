@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Linking, Image, ImageBackground, Alert } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Linking, Image, ImageBackground, Alert, BackHandler } from 'react-native';
 import { signup } from '../api';
 import CheckBox from '@react-native-community/checkbox';
 
@@ -12,6 +12,17 @@ const Signup = ({ navigation }) => {
   const hasLetter = /[a-zA-Z]/.test(password);
   const hasNumber = /[0-9]/.test(password);
   const isLongEnough = password.length > 8;
+
+  useEffect(() => {
+    const backAction = () => {
+      navigation.navigate('Home'); // Rediriger vers la page d'accueil
+      return true; // Prévenir le comportement par défaut
+    };
+
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
+
+    return () => backHandler.remove();
+  }, [navigation]);
 
   const handleSignup = async () => {
     try {
