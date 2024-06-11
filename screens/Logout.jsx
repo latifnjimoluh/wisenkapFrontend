@@ -1,8 +1,21 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import React, { useEffect } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, Alert, BackHandler } from 'react-native';
 import { logout } from '../api';
 
 const Logout = ({ navigation }) => {
+  useEffect(() => {
+    // Gestion du bouton retour du téléphone
+    const backAction = () => {
+      navigation.navigate('Settings'); // Rediriger vers la page d'accueil
+      return true; // Prévenir le comportement par défaut
+    };
+
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
+
+    // Nettoyage de l'écouteur
+    return () => backHandler.remove();
+  }, [navigation]);
+
   const handleLogout = async () => {
     try {
       const response = await logout();

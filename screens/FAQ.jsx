@@ -1,7 +1,20 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import React, { useEffect } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, BackHandler } from 'react-native';
 
-const FAQ = () => {
+const FAQ = ({ navigation }) => {
+  useEffect(() => {
+    // Gestion du bouton retour du téléphone
+    const backAction = () => {
+      navigation.navigate('Profile'); // Rediriger vers la page d'accueil
+      return true; // Prévenir le comportement par défaut
+    };
+
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
+
+    // Nettoyage de l'écouteur
+    return () => backHandler.remove();
+  }, [navigation]);
+
   const faqs = [
     { question: "Comment créer un compte ?", answer: "Pour créer un compte, cliquez sur 'S'inscrire' et suivez les instructions." },
     { question: "Comment réinitialiser mon mot de passe ?", answer: "Cliquez sur 'Mot de passe oublié' sur l'écran de connexion et suivez les instructions." },

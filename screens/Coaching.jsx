@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Modal } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Modal, BackHandler } from 'react-native';
 
-const Coaching = () => {
+const Coaching = ({ navigation }) => {
   const [modalVisible, setModalVisible] = useState(false);
 
   const handleOptimizeBudget = () => {
@@ -11,6 +11,17 @@ const Coaching = () => {
   const closeModal = () => {
     setModalVisible(false);
   };
+
+  useEffect(() => {
+    const backAction = () => {
+      navigation.navigate('Home'); // Rediriger vers la page d'accueil
+      return true; // Prévenir le comportement par défaut
+    };
+
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
+
+    return () => backHandler.remove(); // Retirer l'écouteur lors du démontage du composant
+  }, [navigation]);
 
   return (
     <ScrollView style={styles.container}>

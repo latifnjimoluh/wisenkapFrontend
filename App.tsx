@@ -60,7 +60,7 @@ const App = () => {
   };
 
   if (isLoading || isPreloaderVisible) {
-    return <Preloader onFinished={handlePreloaderFinished} />;
+    //return <Preloader onFinished={handlePreloaderFinished} />;
   }
 
   return (

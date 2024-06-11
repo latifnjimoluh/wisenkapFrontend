@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, Switch, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TextInput, Switch, TouchableOpacity, StyleSheet, ScrollView, BackHandler } from 'react-native';
 import Footer from '../components/Footer';
-const SecuritySettings = () => {
+
+const SecuritySettings = ({ navigation }) => {
   const [isFaceIDEnabled, setIsFaceIDEnabled] = useState(false);
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -12,6 +13,17 @@ const SecuritySettings = () => {
   const togglePasswordVisibility = () => {
     setIsPasswordVisible(!isPasswordVisible);
   };
+
+  useEffect(() => {
+    const backAction = () => {
+      navigation.navigate('Settings'); // Rediriger vers la page d'accueil
+      return true; // Prévenir le comportement par défaut
+    };
+
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
+
+    return () => backHandler.remove(); // Retirer l'écouteur lors du démontage du composant
+  }, [navigation]);
 
   return (
     <ScrollView style={styles.container}>
@@ -58,7 +70,6 @@ const SecuritySettings = () => {
       <TouchableOpacity style={styles.saveButton} onPress={() => { }}>
         <Text style={styles.saveButtonText}>Enregistrer</Text>
       </TouchableOpacity>
-      <Footer/>
     </ScrollView>
   );
 };

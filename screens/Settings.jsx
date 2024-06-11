@@ -1,68 +1,80 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Switch, Image } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Switch, Image, BackHandler } from 'react-native';
 import Footer from '../components/Footer';
+
 const Settings = ({ navigation }) => {
   const [isBalanceHidden, setIsBalanceHidden] = useState(false);
 
+  useEffect(() => {
+    const backAction = () => {
+      navigation.navigate('Home'); // Rediriger vers la page d'accueil
+      return true; // Prévenir le comportement par défaut
+    };
+
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
+
+    return () => backHandler.remove();
+  }, [navigation]);
+
   return (
     <View style={styles.containerr}>
-    <ScrollView style={styles.container}>
-      <View style={styles.headerContainer}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-          <Image source={require('../assets/retour.png')} style={styles.backIcon} />
-        </TouchableOpacity>
-        <Text style={styles.header}>Paramètres</Text>
-      </View>
-      <View style={styles.cContainer}>
-        
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>PARAMÈTRES DE L'APPLICATION</Text>
-        <TouchableOpacity style={styles.item} onPress={() => navigation.navigate('BankAccounts')}>
-          <Text style={styles.itemText}>Comptes bancaires</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.item} onPress={() => navigation.navigate('CurrencySettings')}>
-          <Text style={styles.itemText}>Devises et formats de montant</Text>
-        </TouchableOpacity>
-      </View>
-
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>SÉCURITÉ</Text>
-        <TouchableOpacity style={styles.item} onPress={() => navigation.navigate('SecuritySettings')}>
-          <Text style={styles.itemText}>Code de sécurité et Face ID</Text>
-        </TouchableOpacity>
-        <View style={styles.item}>
-          <Text style={styles.itemText}>Cacher les soldes</Text>
-          <Switch
-            value={isBalanceHidden}
-            onValueChange={setIsBalanceHidden}
-            thumbColor={isBalanceHidden ? "#34C759" : "#f4f3f4"}
-            trackColor={{ false: "#767577", true: "#81b0ff" }}
-          />
+      <ScrollView style={styles.container}>
+        <View style={styles.headerContainer}>
+          <TouchableOpacity onPress={() => navigation.navigate('Home')} style={styles.backButton}>
+            <Image source={require('../assets/retour.png')} style={styles.backIcon} />
+          </TouchableOpacity>
+          <Text style={styles.header}>Paramètres</Text>
         </View>
-        <Text style={styles.note}>Utilisez cette option pour montrer WiseNkap' à des amis sans dévoiler les soldes</Text>
-      </View>
+        <View style={styles.cContainer}>
 
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>ABONNEMENT</Text>
-        <TouchableOpacity style={styles.item} onPress={() => navigation.navigate('Subscription')}>
-          <Text style={styles.itemText}>Actualiser mon abonnement</Text>
-        </TouchableOpacity>
-      </View>
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>PARAMÈTRES DE L'APPLICATION</Text>
+            <TouchableOpacity style={styles.item} onPress={() => navigation.navigate('BankAccounts')}>
+              <Text style={styles.itemText}>Comptes bancaires</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.item} onPress={() => navigation.navigate('CurrencySettings')}>
+              <Text style={styles.itemText}>Devises et formats de montant</Text>
+            </TouchableOpacity>
+          </View>
 
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>PROFIL</Text>
-        <TouchableOpacity style={styles.item} onPress={() => navigation.navigate('ProfileSettings')}>
-          <Text style={styles.itemText}>Profil et mot de passe</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.item} onPress={() => navigation.navigate('Logout')}>
-          <Text style={styles.itemText}>Déconnexion</Text>
-        </TouchableOpacity>
-      </View>
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>SÉCURITÉ</Text>
+            <TouchableOpacity style={styles.item} onPress={() => navigation.navigate('SecuritySettings')}>
+              <Text style={styles.itemText}>Code de sécurité et Face ID</Text>
+            </TouchableOpacity>
+            <View style={styles.item}>
+              <Text style={styles.itemText}>Cacher les soldes</Text>
+              <Switch
+                value={isBalanceHidden}
+                onValueChange={setIsBalanceHidden}
+                thumbColor={isBalanceHidden ? "#34C759" : "#f4f3f4"}
+                trackColor={{ false: "#767577", true: "#81b0ff" }}
+              />
+            </View>
+            <Text style={styles.note}>Utilisez cette option pour montrer WiseNkap' à des amis sans dévoiler les soldes</Text>
+          </View>
 
-      <Text style={styles.version}>version 1.0.2</Text>
-      </View>
-    </ScrollView>
-      <Footer/>
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>ABONNEMENT</Text>
+            <TouchableOpacity style={styles.item} onPress={() => navigation.navigate('Subscription')}>
+              <Text style={styles.itemText}>Actualiser mon abonnement</Text>
+            </TouchableOpacity>
+          </View>
+
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>PROFIL</Text>
+            <TouchableOpacity style={styles.item} onPress={() => navigation.navigate('ProfileSettings')}>
+              <Text style={styles.itemText}>Profil et mot de passe</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.item} onPress={() => navigation.navigate('Logout')}>
+              <Text style={styles.itemText}>Déconnexion</Text>
+            </TouchableOpacity>
+          </View>
+
+          <Text style={styles.version}>version 1.0.2</Text>
+        </View>
+      </ScrollView>
+      <Footer />
     </View>
   );
 };

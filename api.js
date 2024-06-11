@@ -10,7 +10,7 @@ export const signup = async (email, password) => {
     return response.data;
   } catch (error) {
     throw error.response ? error.response.data : error.message;
-  }
+  } 
 };
 
 export const login = async (email, password) => {
@@ -164,20 +164,53 @@ export const getTransactionHistory = async () => {
   }
 };
 
-// Enregistrer le token de notification
-export const registerPushToken = async (token) => {
+
+// Supprimer un budget
+export const deleteBudget = async (budgetId) => {
   try {
-    const response = await axios.post(`${API_BASE_URL}/expoPushTokens`, { token });
+    const response = await axios.delete(`${API_BASE_URL}/budgets/${budgetId}`, {
+      withCredentials: true,
+      headers: { 'Content-Type': 'application/json' },
+    });
     return response.data;
   } catch (error) {
     throw error.response ? error.response.data : error.message;
   }
 };
 
-// Envoyer une notification push
-export const sendPushNotification = async (token, message) => {
+// Récupérer toutes les devises
+export const getCurrencies = async () => {
   try {
-    const response = await axios.post(`${API_BASE_URL}/sendNotification`, { token, message });
+    const response = await axios.get(`${API_BASE_URL}/currencies`, {
+      withCredentials: true,
+      headers: { 'Content-Type': 'application/json' },
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response ? error.response.data : error.message;
+  }
+};
+
+// Activer une devise
+export const activateCurrency = async (currencyId) => {
+  try {
+    const response = await axios.post(`${API_BASE_URL}/currencies/activate`, { id: currencyId }, {
+      withCredentials: true,
+      headers: { 'Content-Type': 'application/json' },
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response ? error.response.data : error.message;
+  }
+};
+
+// Récupérer la devise active
+export const getActiveCurrency = async () => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/currencies/active`, {
+      withCredentials: true,
+      headers: { 'Content-Type': 'application/json' },
+    });
     return response.data;
   } catch (error) {
     throw error.response ? error.response.data : error.message;

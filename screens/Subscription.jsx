@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, BackHandler } from 'react-native';
 
-const Subscription = () => {
+const Subscription = ({ navigation }) => {
   const [selectedPlan, setSelectedPlan] = useState(null);
 
   const plans = [
@@ -21,6 +21,18 @@ const Subscription = () => {
       ]
     );
   };
+
+  useEffect(() => {
+    // Gestion du retour matériel
+    const backAction = () => {
+      navigation.navigate('Settings'); // Rediriger vers la page d'accueil
+      return true; // Prévenir le comportement par défaut
+    };
+
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
+
+    return () => backHandler.remove();
+  }, [navigation]);
 
   return (
     <ScrollView style={styles.container}>

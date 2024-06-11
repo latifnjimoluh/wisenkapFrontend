@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Image, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Image, Alert, BackHandler } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { getUserDetails, updateUserDetails } from '../api';
@@ -35,7 +35,18 @@ const ProfileSettings = ({ navigation }) => {
     };
 
     fetchUserData();
-  }, []);
+
+    // Gestion du bouton retour du téléphone
+    const backAction = () => {
+      navigation.navigate('Home'); // Rediriger vers la page d'accueil
+      return true; // Prévenir le comportement par défaut
+    };
+
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
+
+    // Nettoyage de l'écouteur
+    return () => backHandler.remove();
+  }, [navigation]);
 
   const handleSave = async () => {
     try {
@@ -54,7 +65,7 @@ const ProfileSettings = ({ navigation }) => {
   return (
     <ScrollView>
       <View style={styles.headerContainer}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+        <TouchableOpacity onPress={() => navigation.navigate('Home')} style={styles.backButton}>
           <Image source={require('../assets/retour.png')} style={styles.backIcon} />
         </TouchableOpacity>
         <Text style={styles.headerH}>Profil et mot de passe</Text>
@@ -161,7 +172,7 @@ const ProfileSettings = ({ navigation }) => {
         <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
           <Text style={styles.saveButtonText}>Enregistrer</Text>
         </TouchableOpacity>
-        <Footer/>
+        <Footer />
       </View>
     </ScrollView>
   );
@@ -247,25 +258,6 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 16,
     fontWeight: 'bold',
-  },
-  footer: {
-    marginTop: 20,
-    padding: 15,
-    backgroundColor: '#F0F0F0',
-    borderRadius: 10,
-    textAlign: 'center',
-  },
-  footerText: {
-    fontSize: 12,
-    color: '#8E8E93',
-    textAlign: 'center',
-    marginBottom: 10,
-  },
-  footerLink: {
-    fontSize: 14,
-    color: '#00A8E8',
-    textAlign: 'center',
-    textDecorationLine: 'underline',
   },
 });
 

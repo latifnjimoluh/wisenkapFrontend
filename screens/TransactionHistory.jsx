@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Alert, BackHandler } from 'react-native';
 import { getTransactionHistory } from '../api';
 
 const TransactionHistory = ({ navigation }) => {
@@ -17,7 +17,17 @@ const TransactionHistory = ({ navigation }) => {
     };
 
     fetchTransactionHistory();
-  }, []);
+
+    // Gestion du retour matériel
+    const backAction = () => {
+      navigation.navigate('SelectCategories'); // Rediriger vers la page d'accueil
+      return true; // Prévenir le comportement par défaut
+    };
+
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
+
+    return () => backHandler.remove(); // Retirer l'écouteur lors du démontage du composant
+  }, [navigation]);
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>

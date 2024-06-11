@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Alert, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Alert, TouchableOpacity, BackHandler } from 'react-native';
 import { getSavingsHistory } from '../api';
 import Footer from '../components/Footer';
 
@@ -18,7 +18,18 @@ const SavingsHistory = ({ navigation }) => {
     };
 
     fetchSavingsHistory();
-  }, []);
+
+    // Gestion du bouton retour du téléphone
+    const backAction = () => {
+      navigation.navigate('Savings'); // Rediriger vers la page d'accueil
+      return true; // Prévenir le comportement par défaut
+    };
+
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
+
+    // Nettoyage de l'écouteur
+    return () => backHandler.remove();
+  }, [navigation]);
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
@@ -34,7 +45,6 @@ const SavingsHistory = ({ navigation }) => {
       <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
         <Text style={styles.backButtonText}>Retour</Text>
       </TouchableOpacity>
-      <Footer/>
     </ScrollView>
   );
 };

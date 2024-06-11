@@ -1,30 +1,74 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, ActivityIndicator, ScrollView } from 'react-native';
-import { getBudgets } from '../api'; // Assurez-vous d'avoir une fonction getBudgets dans votre fichier API
+import { View, Text, StyleSheet, TouchableOpacity, Image, ActivityIndicator, ScrollView, Alert, BackHandler } from 'react-native';
+import { getBudgets, deleteBudget, getActiveCurrency } from '../api';
 import Footer from '../components/Footer';
 
 const Budget = ({ navigation }) => {
   const [budgets, setBudgets] = useState([]);
+  const [activeCurrency, setActiveCurrency] = useState({ code: 'FCFA' }); // Devise par défaut
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
   useEffect(() => {
     const fetchBudgets = async () => {
       try {
-        console.log('Appel à getBudgets');
         const data = await getBudgets();
-        console.log('Budgets récupérés:', data);
         setBudgets(data);
       } catch (error) {
-        console.error('Erreur dans fetchBudgets:', error);
         setError('Erreur lors de la récupération des budgets');
       } finally {
         setLoading(false);
       }
     };
 
+    const fetchActiveCurrency = async () => {
+      try {
+        const currency = await getActiveCurrency();
+        setActiveCurrency(currency);
+      } catch (error) {
+        console.error('Erreur lors de la récupération de la devise active:', error);
+      }
+    };
+
     fetchBudgets();
+    fetchActiveCurrency();
   }, []);
+
+  useEffect(() => {
+    const backAction = () => {
+      navigation.navigate('Home');
+      return true;
+    };
+
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
+
+    return () => backHandler.remove();
+  }, [navigation]);
+
+  const handleDeleteBudget = async (budgetId) => {
+    Alert.alert(
+      "Confirmation",
+      "Êtes-vous sûr de vouloir supprimer ce budget?",
+      [
+        {
+          text: "Annuler",
+          style: "cancel"
+        },
+        {
+          text: "Supprimer",
+          onPress: async () => {
+            try {
+              await deleteBudget(budgetId);
+              setBudgets(budgets.filter(budget => budget.id !== budgetId));
+              Alert.alert('Succès', 'Budget supprimé avec succès.');
+            } catch (error) {
+              Alert.alert('Erreur', 'Erreur lors de la suppression du budget.');
+            }
+          }
+        }
+      ]
+    );
+  };
 
   if (loading) {
     return (
@@ -72,14 +116,22 @@ const Budget = ({ navigation }) => {
           ) : (
             budgets.map((budget, index) => (
               <View key={index} style={styles.budgetItem}>
-                <Text style={styles.budgetName}>{budget.category}</Text>
-                <Text style={styles.budgetAmount}>{budget.amount} FCFA</Text>
+                <View style={styles.budgetInfo}>
+                  <Text style={styles.budgetName}>{budget.category}</Text>
+                  <Text style={styles.budgetAmount}>{budget.amount} {activeCurrency.code}</Text>
+                </View>
+                <TouchableOpacity
+                  style={styles.deleteButton}
+                  onPress={() => handleDeleteBudget(budget.id)}
+                >
+                  <Text style={styles.deleteButtonText}>Supprimer</Text>
+                </TouchableOpacity>
               </View>
             ))
           )}
         </View>
       </ScrollView>
-      <Footer/>
+      <Footer />
     </View>
   );
 };
@@ -161,6 +213,10 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  budgetInfo: {
+    flex: 1,
   },
   budgetName: {
     fontSize: 16,
@@ -170,6 +226,17 @@ const styles = StyleSheet.create({
   budgetAmount: {
     fontSize: 16,
     color: '#00A8E8',
+  },
+  deleteButton: {
+    backgroundColor: '#FF3B30',
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    borderRadius: 5,
+  },
+  deleteButtonText: {
+    color: 'white',
+    fontSize: 14,
+    fontWeight: 'bold',
   },
   loaderContainer: {
     flex: 1,

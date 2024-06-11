@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView, Image, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView, Image, Alert, BackHandler } from 'react-native';
 import CheckBox from '@react-native-community/checkbox';
 import { Picker } from '@react-native-picker/picker';
 import { getBudgets, getExpensesByBudget, createTransactions } from '../api';
@@ -24,6 +24,17 @@ const SelectCategories = ({ navigation }) => {
 
     fetchBudgets();
   }, []);
+
+  useEffect(() => {
+    const backAction = () => {
+      navigation.navigate('Home'); // Rediriger vers la page d'accueil
+      return true; // Prévenir le comportement par défaut
+    };
+
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
+
+    return () => backHandler.remove();
+  }, [navigation]);
 
   const handleBudgetChange = async (budgetId) => {
     setSelectedBudget(budgetId);
@@ -161,11 +172,11 @@ const SelectCategories = ({ navigation }) => {
           <Text style={styles.submitButtonText}>Valider</Text>
         </TouchableOpacity>
 
-          <TouchableOpacity style={styles.historyButton} onPress={() => navigation.navigate('TransactionHistory')}>
-            <Text style={styles.historyButtonText}>Historique des transactions</Text>
-          </TouchableOpacity>
+        <TouchableOpacity style={styles.historyButton} onPress={() => navigation.navigate('TransactionHistory')}>
+          <Text style={styles.historyButtonText}>Historique des transactions</Text>
+        </TouchableOpacity>
       </ScrollView>
-      <Footer/>
+      <Footer />
     </SafeAreaView>
   );
 };

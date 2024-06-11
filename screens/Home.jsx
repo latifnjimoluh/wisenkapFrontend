@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Image, Alert, BackHandler } from 'react-native';
-import { getUserDetails, getBudgets } from '../api';
+import { getUserDetails, getBudgets, getActiveCurrency } from '../api'; // Ajoutez getActiveCurrency
 import { Picker } from '@react-native-picker/picker';
 import { useFocusEffect } from '@react-navigation/native';
 import Footer from '../components/Footer';
@@ -11,6 +11,7 @@ const Home = ({ navigation }) => {
   const [selectedBudget, setSelectedBudget] = useState(null);
   const [balance, setBalance] = useState('');
   const [showPicker, setShowPicker] = useState(false);
+  const [activeCurrency, setActiveCurrency] = useState({}); // État pour la devise active
 
   const fetchData = async () => {
     try {
@@ -23,6 +24,9 @@ const Home = ({ navigation }) => {
         setSelectedBudget(budgetResponse[0].id);
         setBalance(budgetResponse[0].amount);
       }
+
+      const currencyResponse = await getActiveCurrency(); // Obtenez la devise active
+      setActiveCurrency(currencyResponse.currency);
     } catch (error) {
       console.error('Erreur lors de la récupération des données utilisateur:', error);
       Alert.alert('Erreur', 'Erreur lors de la récupération des données utilisateur.');
@@ -66,90 +70,88 @@ const Home = ({ navigation }) => {
 
   return (
     <View style={styles.containerr}>
-      
-    <View style={styles.container}>
-      <ScrollView>
-        <View style={styles.headerContainer}>
-          <View style={styles.header}>
-            <Image source={require('../assets/logo.png')} style={styles.logo} />
-            <Text style={styles.welcomeText}>Bienvenue, {userName}!</Text>
+      <View style={styles.container}>
+        <ScrollView>
+          <View style={styles.headerContainer}>
+            <View style={styles.header}>
+              <Image source={require('../assets/logo.png')} style={styles.logo} />
+              <Text style={styles.welcomeText}>Bienvenue, {userName}!</Text>
+            </View>
+            <TouchableOpacity onPress={() => navigation.navigate('Profile')} style={styles.notificationIcon}>
+              <Image source={require('../assets/user.png')} style={styles.iconImage} />
+            </TouchableOpacity>
           </View>
-          <TouchableOpacity onPress={() => navigation.navigate('Profile')} style={styles.notificationIcon}>
-            <Image source={require('../assets/user.png')} style={styles.iconImage} />
-          </TouchableOpacity>
-        </View>
 
-        <View style={styles.balanceContainer}>
-          {budgets.length > 0 ? (
-            <>
-              <TouchableOpacity style={styles.balanceTextContainer} onPress={() => setShowPicker(!showPicker)}>
-                <Text style={styles.balanceText}>
-                  Solde Actuel: {selectedBudget ? budgets.find(b => b.id === selectedBudget).category : 'Sélectionner votre budget'}
-                </Text>
-                <Image source={require('../assets/dropdown_arrow.png')} style={styles.dropdownIcon} />
-              </TouchableOpacity>
-              {showPicker && (
-                <View style={styles.pickerContainer}>
-                  <Picker
-                    selectedValue={selectedBudget}
-                    style={styles.picker}
-                    onValueChange={handleBudgetChange}
-                  >
-                    {budgets.map(budget => (
-                      <Picker.Item key={budget.id} label={budget.category} value={budget.id} />
-                    ))}
-                  </Picker>
-                </View>
-              )}
-            </>
-          ) : (
-            <Text style={styles.noBudgetText}>Pas de budget disponible</Text>
-          )}
-          <Text style={styles.balanceAmount}>{balance} FCFA</Text>
-        </View>
+          <View style={styles.balanceContainer}>
+            {budgets.length > 0 ? (
+              <>
+                <TouchableOpacity style={styles.balanceTextContainer} onPress={() => setShowPicker(!showPicker)}>
+                  <Text style={styles.balanceText}>
+                    Solde Actuel: {selectedBudget ? budgets.find(b => b.id === selectedBudget).category : 'Sélectionner votre budget'}
+                  </Text>
+                  <Image source={require('../assets/dropdown_arrow.png')} style={styles.dropdownIcon} />
+                </TouchableOpacity>
+                {showPicker && (
+                  <View style={styles.pickerContainer}>
+                    <Picker
+                      selectedValue={selectedBudget}
+                      style={styles.picker}
+                      onValueChange={handleBudgetChange}
+                    >
+                      {budgets.map(budget => (
+                        <Picker.Item key={budget.id} label={budget.category} value={budget.id} />
+                      ))}
+                    </Picker>
+                  </View>
+                )}
+              </>
+            ) : (
+              <Text style={styles.noBudgetText}>Pas de budget disponible</Text>
+            )}
+            <Text style={styles.balanceAmount}>{balance} {activeCurrency.code || 'FCFA'}</Text>
+          </View>
 
-        <View style={styles.featuresContainer}>
-          <TouchableOpacity style={styles.featureItem} onPress={() => navigation.navigate('Profile')}>
-            <Image source={require('../assets/user.png')} style={styles.iconImage} />
-            <Text style={styles.featureText}>Profil</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.featureItem} onPress={() => navigation.navigate('Budgets')}>
-            <Image source={require('../assets/Budgets.png')} style={styles.iconImage} />
-            <Text style={styles.featureText}>Budget</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.featureItem} onPress={() => navigation.navigate('SelectCategories')}>
-            <Image source={require('../assets/transactions.png')} style={styles.iconImage} />
-            <Text style={styles.featureText}>Transactions</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.featureItem} onPress={() => navigation.navigate('Savings')}>
-            <Image source={require('../assets/Epargne.png')} style={styles.iconImage} />
-            <Text style={styles.featureText}>Épargne</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.featureItem} onPress={() => navigation.navigate('NotificationsAlerts')}>
-            <Image source={require('../assets/notifications.png')} style={styles.iconImage} />
-            <Text style={styles.featureText}>Notifications</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.featureItem} onPress={() => navigation.navigate('Coaching')}>
-            <Image source={require('../assets/coaching.png')} style={styles.iconImage} />
-            <Text style={styles.featureText}>Coaching</Text>
-          </TouchableOpacity>
-        </View>
+          <View style={styles.featuresContainer}>
+            <TouchableOpacity style={styles.featureItem} onPress={() => navigation.navigate('Profile')}>
+              <Image source={require('../assets/user.png')} style={styles.iconImage} />
+              <Text style={styles.featureText}>Profil</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.featureItem} onPress={() => navigation.navigate('Budgets')}>
+              <Image source={require('../assets/Budgets.png')} style={styles.iconImage} />
+              <Text style={styles.featureText}>Budget</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.featureItem} onPress={() => navigation.navigate('SelectCategories')}>
+              <Image source={require('../assets/transactions.png')} style={styles.iconImage} />
+              <Text style={styles.featureText}>Transactions</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.featureItem} onPress={() => navigation.navigate('Savings')}>
+              <Image source={require('../assets/Epargne.png')} style={styles.iconImage} />
+              <Text style={styles.featureText}>Épargne</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.featureItem} onPress={() => navigation.navigate('NotificationsAlerts')}>
+              <Image source={require('../assets/notifications.png')} style={styles.iconImage} />
+              <Text style={styles.featureText}>Notifications</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.featureItem} onPress={() => navigation.navigate('Coaching')}>
+              <Image source={require('../assets/coaching.png')} style={styles.iconImage} />
+              <Text style={styles.featureText}>Coaching</Text>
+            </TouchableOpacity>
+          </View>
 
-        <View style={styles.footer}>
-          <TouchableOpacity onPress={() => navigation.navigate('Support')}>
-            <Text style={styles.footerLink}>Support</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => navigation.navigate('FAQ')}>
-            <Text style={styles.footerLink}>FAQ</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => navigation.navigate('Settings')}>
-            <Text style={styles.footerLink}>Réglages</Text>
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
-    </View>
-    
-    <Footer />
+          <View style={styles.footer}>
+            <TouchableOpacity onPress={() => navigation.navigate('Support')}>
+              <Text style={styles.footerLink}>Support</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => navigation.navigate('FAQ')}>
+              <Text style={styles.footerLink}>FAQ</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => navigation.navigate('Settings')}>
+              <Text style={styles.footerLink}>Réglages</Text>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
+      </View>
+      <Footer />
     </View>
   );
 };
@@ -160,7 +162,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#F0F0F0',
     paddingHorizontal: 20,
   },
-  
   containerr: {
     flex: 1,
     backgroundColor: 'white',

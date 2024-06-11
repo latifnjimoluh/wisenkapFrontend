@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, BackHandler } from 'react-native';
 import { getUserDetails } from '../api'; 
 
 const Profile = ({ navigation }) => {
@@ -18,7 +18,17 @@ const Profile = ({ navigation }) => {
     };
 
     fetchUserDetails();
-  }, []);
+
+    // Gestion du retour matériel
+    const backAction = () => {
+      navigation.navigate('Home'); // Rediriger vers la page d'accueil
+      return true; // Prévenir le comportement par défaut
+    };
+
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
+
+    return () => backHandler.remove();
+  }, [navigation]);
 
   return (
     <View style={styles.container}>

@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Modal, FlatList } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Modal, FlatList, BackHandler } from 'react-native';
 
-
-const BankAccounts = () => {
+const BankAccounts = ({ navigation }) => {
   const [modalVisible, setModalVisible] = useState(false);
 
   const banks = [
@@ -11,6 +10,17 @@ const BankAccounts = () => {
     { id: '3', name: 'Banque 3' },
     // Ajouter plus de banques ici
   ];
+
+  useEffect(() => {
+    const backAction = () => {
+      navigation.navigate('Profile'); // Rediriger vers la page d'accueil
+      return true; // Prévenir le comportement par défaut
+    };
+
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
+
+    return () => backHandler.remove(); // Retirer l'écouteur lors du démontage du composant
+  }, [navigation]);
 
   const renderItem = ({ item }) => (
     <TouchableOpacity style={styles.bankItem} onPress={() => setModalVisible(false)}>

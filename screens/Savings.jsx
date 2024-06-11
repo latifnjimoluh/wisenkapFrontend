@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView, TextInput, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, TextInput, Alert, BackHandler } from 'react-native';
 import { getBudgets, createSaving } from '../api';
 import { Picker } from '@react-native-picker/picker';
 import Footer from '../components/Footer';
@@ -27,6 +27,17 @@ const Savings = ({ navigation }) => {
     fetchBudgets();
   }, []);
 
+  useEffect(() => {
+    const backAction = () => {
+      navigation.navigate('Home'); // Rediriger vers la page d'accueil
+      return true; // Prévenir le comportement par défaut
+    };
+
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
+
+    return () => backHandler.remove();
+  }, [navigation]);
+
   const handleSave = async () => {
     if (!selectedBudget || !amount) {
       Alert.alert('Erreur', 'Veuillez sélectionner un budget et entrer un montant.');
@@ -44,56 +55,55 @@ const Savings = ({ navigation }) => {
 
   return (
     <View style={styles.containerr}>
-    <ScrollView style={styles.container}>
-      <Text style={styles.header}>Épargne</Text>
+      <ScrollView style={styles.container}>
+        <Text style={styles.header}>Épargne</Text>
 
-      <View style={styles.inputContainer}>
-        <Text style={styles.label}>Sélectionner le budget</Text>
-        <Picker
-          selectedValue={selectedBudget}
-          style={styles.picker}
-          onValueChange={(itemValue) => setSelectedBudget(itemValue)}
-        >
-          {budgets.map(budget => (
-            <Picker.Item key={budget.id} label={budget.category} value={budget.id} />
-          ))}
-        </Picker>
-      </View>
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Sélectionner le budget</Text>
+          <Picker
+            selectedValue={selectedBudget}
+            style={styles.picker}
+            onValueChange={(itemValue) => setSelectedBudget(itemValue)}
+          >
+            {budgets.map(budget => (
+              <Picker.Item key={budget.id} label={budget.category} value={budget.id} />
+            ))}
+          </Picker>
+        </View>
 
-      <View style={styles.inputContainer}>
-        <Text style={styles.label}>Montant à épargner</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Montant"
-          placeholderTextColor="#8E8E93"
-          value={amount}
-          onChangeText={setAmount}
-          keyboardType="numeric"
-        />
-      </View>
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Montant à épargner</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Montant"
+            placeholderTextColor="#8E8E93"
+            value={amount}
+            onChangeText={setAmount}
+            keyboardType="numeric"
+          />
+        </View>
 
-      <View style={styles.inputContainer}>
-        <Text style={styles.label}>Date</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="JJ/MM/AAAA"
-          placeholderTextColor="#8E8E93"
-          value={date.toLocaleDateString()}
-          editable={false}
-        />
-      </View>
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Date</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="JJ/MM/AAAA"
+            placeholderTextColor="#8E8E93"
+            value={date.toLocaleDateString()}
+            editable={false}
+          />
+        </View>
 
-      <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-        <Text style={styles.saveButtonText}>Épargner</Text>
-      </TouchableOpacity>
+        <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
+          <Text style={styles.saveButtonText}>Épargner</Text>
+        </TouchableOpacity>
 
-      <TouchableOpacity style={styles.historyButton} onPress={() => navigation.navigate('SavingsHistory')}>
-        <Text style={styles.historyButtonText}>Voir l'historique des épargnes</Text>
-      </TouchableOpacity>
-    </ScrollView>
-    <Footer/>
+        <TouchableOpacity style={styles.historyButton} onPress={() => navigation.navigate('SavingsHistory')}>
+          <Text style={styles.historyButtonText}>Voir l'historique des épargnes</Text>
+        </TouchableOpacity>
+      </ScrollView>
+      <Footer />
     </View>
-    
   );
 };
 

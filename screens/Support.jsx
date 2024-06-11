@@ -1,7 +1,19 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import React, { useEffect } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, BackHandler } from 'react-native';
 
 const Support = ({ navigation }) => {
+  useEffect(() => {
+    // Gestion du retour matériel
+    const backAction = () => {
+      navigation.navigate('Profile'); // Rediriger vers la page d'accueil
+      return true; // Prévenir le comportement par défaut
+    };
+
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
+
+    return () => backHandler.remove();
+  }, [navigation]);
+
   return (
     <ScrollView style={styles.container}>
       <Text style={styles.header}>Support</Text>

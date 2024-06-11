@@ -1,12 +1,25 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView, TextInput } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, TextInput, BackHandler, Alert } from 'react-native';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 
-const DataExport = () => {
+const DataExport = ({ navigation }) => {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [isStartDatePickerVisible, setStartDatePickerVisibility] = useState(false);
   const [isEndDatePickerVisible, setEndDatePickerVisibility] = useState(false);
+
+  useEffect(() => {
+    // Gestion du bouton retour du téléphone
+    const backAction = () => {
+      navigation.navigate('Profile'); // Rediriger vers la page d'accueil
+      return true; // Prévenir le comportement par défaut
+    };
+
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
+
+    // Nettoyage de l'écouteur
+    return () => backHandler.remove();
+  }, [navigation]);
 
   const showStartDatePicker = () => {
     setStartDatePickerVisibility(true);
@@ -41,7 +54,7 @@ const DataExport = () => {
       alert("La date de début doit être inférieure à la date de fin.");
       return;
     }
-    // Logic to handle data export
+    // Logique pour gérer l'exportation des données
     console.log({ startDate, endDate });
   };
 
@@ -122,7 +135,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     paddingHorizontal: 10,
     backgroundColor: '#F0F0F0',
-    color: 'black', // couleur du texte lors de la saisie
+    color: 'black',
   },
   exportButton: {
     backgroundColor: '#00A8E8',
