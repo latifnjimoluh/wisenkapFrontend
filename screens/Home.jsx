@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Image, Alert, BackHandler } from 'react-native';
-import { getUserDetails, getBudgets, getActiveCurrency } from '../api'; // Ajoutez getActiveCurrency
+import { getUserDetails, getBudgets, getActiveCurrency } from '../api';
 import { Picker } from '@react-native-picker/picker';
 import { useFocusEffect } from '@react-navigation/native';
 import Footer from '../components/Footer';
@@ -11,12 +11,14 @@ const Home = ({ navigation }) => {
   const [selectedBudget, setSelectedBudget] = useState(null);
   const [balance, setBalance] = useState('');
   const [showPicker, setShowPicker] = useState(false);
-  const [activeCurrency, setActiveCurrency] = useState({}); // État pour la devise active
+  const [activeCurrency, setActiveCurrency] = useState({});
+  const [photoUri, setPhotoUri] = useState('');
 
   const fetchData = async () => {
     try {
       const userResponse = await getUserDetails();
       setUserName(userResponse.firstName);
+      setPhotoUri(userResponse.photoUri || ''); // Récupérer le chemin de la photo
 
       const budgetResponse = await getBudgets();
       setBudgets(budgetResponse);
@@ -25,12 +27,12 @@ const Home = ({ navigation }) => {
         setBalance(budgetResponse[0].amount);
       }
 
-      const currencyResponse = await getActiveCurrency(); // Obtenez la devise active
+      const currencyResponse = await getActiveCurrency();
       setActiveCurrency(currencyResponse.currency);
     } catch (error) {
       console.error('Erreur lors de la récupération des données utilisateur:', error);
       Alert.alert('Erreur', 'Erreur lors de la récupération des données utilisateur.');
-      navigation.navigate('Login'); // Redirection si erreur
+      navigation.navigate('Login');
     }
   };
 
@@ -68,6 +70,23 @@ const Home = ({ navigation }) => {
     setShowPicker(false);
   };
 
+  const renderAlert = () => {
+    if (balance <= 5000 && balance > 0) {
+      return (
+        <View style={styles.alertContainer}>
+          <Text style={styles.alertText}>⚠️ Vous êtes dans le rouge de votre budget. Économisez !</Text>
+        </View>
+      );
+    } else if (balance <= 0) {
+      return (
+        <View style={styles.alertContainer}>
+          <Text style={styles.alertText}>❗ Vous avez dépensé plus qu'il ne faut de votre budget !</Text>
+        </View>
+      );
+    }
+    return null;
+  };
+
   return (
     <View style={styles.containerr}>
       <View style={styles.container}>
@@ -78,7 +97,11 @@ const Home = ({ navigation }) => {
               <Text style={styles.welcomeText}>Bienvenue, {userName}!</Text>
             </View>
             <TouchableOpacity onPress={() => navigation.navigate('Profile')} style={styles.notificationIcon}>
-              <Image source={require('../assets/user.png')} style={styles.iconImage} />
+              {photoUri ? (
+                <Image source={{ uri: photoUri }} style={styles.userPhoto} />
+              ) : (
+                <Image source={require('../assets/user.png')} style={styles.iconImage} />
+              )}
             </TouchableOpacity>
           </View>
 
@@ -109,11 +132,16 @@ const Home = ({ navigation }) => {
               <Text style={styles.noBudgetText}>Pas de budget disponible</Text>
             )}
             <Text style={styles.balanceAmount}>{balance} {activeCurrency.code || 'FCFA'}</Text>
+            {renderAlert()}
           </View>
 
           <View style={styles.featuresContainer}>
             <TouchableOpacity style={styles.featureItem} onPress={() => navigation.navigate('Profile')}>
-              <Image source={require('../assets/user.png')} style={styles.iconImage} />
+            {photoUri ? (
+                <Image source={{ uri: photoUri }} style={styles.userPhoto} />
+              ) : (
+                <Image source={require('../assets/user.png')} style={styles.iconImage} />
+              )}
               <Text style={styles.featureText}>Profil</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.featureItem} onPress={() => navigation.navigate('Budgets')}>
@@ -196,6 +224,11 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
   },
+  userPhoto: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+  },
   balanceContainer: {
     backgroundColor: '#FFF',
     borderRadius: 10,
@@ -227,6 +260,17 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     color: '#00A8E8',
+  },
+  alertContainer: {
+    marginTop: 10,
+    padding: 10,
+    backgroundColor: '#FFEB3B',
+    borderRadius: 5,
+  },
+  alertText: {
+    fontSize: 16,
+    color: '#D32F2F',
+    textAlign: 'center',
   },
   picker: {
     width: '100%',

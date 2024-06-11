@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Image, Alert, BackHandler } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { getUserDetails, updateUserDetails } from '../api';
 import { Picker } from '@react-native-picker/picker';
 import Footer from '../components/Footer';
+import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 
 const ProfileSettings = ({ navigation }) => {
   const [email, setEmail] = useState('');
@@ -17,6 +17,7 @@ const ProfileSettings = ({ navigation }) => {
   const [country, setCountry] = useState('');
   const [postalCode, setPostalCode] = useState('');
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+  const [photoUri, setPhotoUri] = useState('');
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -29,6 +30,7 @@ const ProfileSettings = ({ navigation }) => {
         setDob(new Date(user.dob || Date.now()));
         setCountry(user.country || '');
         setPostalCode(user.postalCode || '');
+        setPhotoUri(user.photoUri || ''); // Charger le chemin de la photo
       } catch (error) {
         console.error('Erreur lors de la récupération des données utilisateur:', error);
       }
@@ -38,7 +40,7 @@ const ProfileSettings = ({ navigation }) => {
 
     // Gestion du bouton retour du téléphone
     const backAction = () => {
-      navigation.navigate('Home'); // Rediriger vers la page d'accueil
+      navigation.navigate('Settings'); // Rediriger vers la page d'accueil
       return true; // Prévenir le comportement par défaut
     };
 
@@ -50,7 +52,7 @@ const ProfileSettings = ({ navigation }) => {
 
   const handleSave = async () => {
     try {
-      const response = await updateUserDetails({ phone, firstName, gender, dob, country, postalCode });
+      const response = await updateUserDetails({ phone, firstName, gender, dob, country, postalCode, photoUri });
       Alert.alert('Succès', response.message);
     } catch (error) {
       Alert.alert('Erreur', 'Erreur lors de la mise à jour des informations.');
@@ -62,15 +64,49 @@ const ProfileSettings = ({ navigation }) => {
     setIsPasswordVisible(!isPasswordVisible);
   };
 
+  const handleChoosePhoto = () => {
+    Alert.alert(
+      'Choisir une photo',
+      'Voulez-vous prendre une nouvelle photo ou choisir dans la galerie ?',
+      [
+        { text: 'Annuler', style: 'cancel' },
+        { text: 'Prendre une photo', onPress: handleTakePhoto },
+        { text: 'Choisir dans la galerie', onPress: handleSelectPhoto },
+      ]
+    );
+  };
+
+  const handleTakePhoto = () => {
+    launchCamera({ mediaType: 'photo', saveToPhotos: true }, (response) => {
+      if (response.didCancel) {
+        console.log('User cancelled image picker');
+      } else if (response.errorCode) {
+        console.log('ImagePicker Error: ', response.errorMessage);
+      } else {
+        setPhotoUri(response.assets[0].uri);
+      }
+    });
+  };
+
+  const handleSelectPhoto = () => {
+    launchImageLibrary({ mediaType: 'photo' }, (response) => {
+      if (response.didCancel) {
+        console.log('User cancelled image picker');
+      } else if (response.errorCode) {
+        console.log('ImagePicker Error: ', response.errorMessage);
+      } else {
+        setPhotoUri(response.assets[0].uri);
+      }
+    });
+  };
+
   return (
     <ScrollView>
-      <View style={styles.headerContainer}>
-        <TouchableOpacity onPress={() => navigation.navigate('Home')} style={styles.backButton}>
-          <Image source={require('../assets/retour.png')} style={styles.backIcon} />
-        </TouchableOpacity>
-        <Text style={styles.headerH}>Profil et mot de passe</Text>
-      </View>
       <View style={styles.container}>
+        <TouchableOpacity onPress={handleChoosePhoto} style={styles.photoContainer}>
+          <Image source={photoUri ? { uri: photoUri } : require('../assets/user.png')} style={styles.photo} />
+          <Text style={styles.photoText}>Changer de photo</Text>
+        </TouchableOpacity>
         <View style={styles.infoContainer}>
           <View style={styles.infoItem}>
             <Text style={styles.label}>Email</Text>
@@ -184,36 +220,26 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     padding: 20,
   },
+  photoContainer: {
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  photo: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    marginBottom: 10,
+  },
+  photoText: {
+    fontSize: 16,
+    color: '#00A8E8',
+  },
   header: {
     fontSize: 24,
     fontWeight: 'bold',
     color: '#00A8E8',
     marginBottom: 20,
     textAlign: 'center',
-  },
-  headerContainer: {
-    backgroundColor: '#00A8E8',
-    paddingVertical: 15,
-    paddingHorizontal: 20,
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  headerH: {
-    flex: 1,
-    textAlign: 'center',
-    color: 'white',
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  backButton: {
-    position: 'absolute',
-    left: 20,
-    zIndex: 1,
-  },
-  backIcon: {
-    width: 30,
-    height: 30,
   },
   infoContainer: {
     backgroundColor: '#F8F8F8',
