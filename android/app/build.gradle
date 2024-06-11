@@ -111,7 +111,6 @@ dependencies {
     implementation platform('com.google.firebase:firebase-bom:32.1.1')  // Utilisez la dernière version stable
     implementation 'com.google.firebase:firebase-messaging'
     implementation project(':react-native-push-notification')
-    implementation project(':lottie-react-native')
 
 
     if (hermesEnabled.toBoolean()) {

@@ -1,28 +1,53 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Switch, TouchableOpacity, StyleSheet, ScrollView, BackHandler } from 'react-native';
+import { View, Text, TextInput, Switch, TouchableOpacity, StyleSheet, ScrollView, Alert, BackHandler } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import Footer from '../components/Footer';
 
 const SecuritySettings = ({ navigation }) => {
   const [isFaceIDEnabled, setIsFaceIDEnabled] = useState(false);
+  const [oldPassword, setOldPassword] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
   const toggleFaceID = () => setIsFaceIDEnabled(previousState => !previousState);
-
   const togglePasswordVisibility = () => {
     setIsPasswordVisible(!isPasswordVisible);
   };
 
+  const handleSave = async () => {
+    if (password !== confirmPassword) {
+      Alert.alert('Erreur', 'Les nouveaux codes ne correspondent pas.');
+      return;
+    }
+    if (password.length !== 4) {
+      Alert.alert('Erreur', 'Le nouveau code doit être de 4 chiffres.');
+      return;
+    }
+    try {
+      const storedCode = await AsyncStorage.getItem('authCode');
+      if (storedCode !== oldPassword) {
+        Alert.alert('Erreur', 'L\'ancien code ne correspond pas.');
+        return;
+      }
+
+      await AsyncStorage.setItem('authCode', password);
+      Alert.alert('Succès', 'Code de sécurité enregistré.');
+      navigation.navigate('Settings');
+    } catch (error) {
+      Alert.alert('Erreur', 'Erreur lors de la sauvegarde du code de sécurité.');
+    }
+  };
+
   useEffect(() => {
     const backAction = () => {
-      navigation.navigate('Settings'); // Rediriger vers la page d'accueil
-      return true; // Prévenir le comportement par défaut
+      navigation.navigate('Settings');
+      return true;
     };
 
     const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
 
-    return () => backHandler.remove(); // Retirer l'écouteur lors du démontage du composant
+    return () => backHandler.remove();
   }, [navigation]);
 
   return (
@@ -30,31 +55,49 @@ const SecuritySettings = ({ navigation }) => {
       <Text style={styles.header}>Code de Sécurité et Face ID</Text>
 
       <View style={styles.inputContainer}>
-        <Text style={styles.label}>Nouveau Mot de Passe</Text>
+        <Text style={styles.label}>Ancien Code de Sécurité</Text>
         <TextInput
           style={styles.input}
-          placeholder="Entrer le mot de passe"
+          placeholder="****"
           placeholderTextColor="#8E8E93"
-          value={password}
-          onChangeText={setPassword}
+          value={oldPassword}
+          onChangeText={setOldPassword}
+          keyboardType="numeric"
           secureTextEntry={!isPasswordVisible}
+          maxLength={4}
         />
       </View>
 
       <View style={styles.inputContainer}>
-        <Text style={styles.label}>Confirmer le Mot de Passe</Text>
+        <Text style={styles.label}>Nouveau Code de Sécurité</Text>
         <TextInput
           style={styles.input}
-          placeholder="Confirmer le mot de passe"
+          placeholder="****"
+          placeholderTextColor="#8E8E93"
+          value={password}
+          onChangeText={setPassword}
+          keyboardType="numeric"
+          secureTextEntry={!isPasswordVisible}
+          maxLength={4}
+        />
+      </View>
+
+      <View style={styles.inputContainer}>
+        <Text style={styles.label}>Confirmer le Nouveau Code de Sécurité</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="****"
           placeholderTextColor="#8E8E93"
           value={confirmPassword}
           onChangeText={setConfirmPassword}
+          keyboardType="numeric"
           secureTextEntry={!isPasswordVisible}
+          maxLength={4}
         />
       </View>
 
       <TouchableOpacity onPress={togglePasswordVisibility}>
-        <Text style={styles.showPassword}>{isPasswordVisible ? "Masquer le mot de passe" : "Afficher le mot de passe"}</Text>
+        <Text style={styles.showPassword}>{isPasswordVisible ? "Masquer le code" : "Afficher le code"}</Text>
       </TouchableOpacity>
 
       <View style={styles.settingContainer}>
@@ -67,7 +110,7 @@ const SecuritySettings = ({ navigation }) => {
         />
       </View>
 
-      <TouchableOpacity style={styles.saveButton} onPress={() => { }}>
+      <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
         <Text style={styles.saveButtonText}>Enregistrer</Text>
       </TouchableOpacity>
     </ScrollView>

@@ -1,4 +1,4 @@
-// File: App.js
+// App.js
 import React, { useState, useEffect } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
@@ -27,8 +27,11 @@ import ProfileSettings from './screens/ProfileSettings';
 import Logout from './screens/Logout';
 import SavingsHistory from './screens/SavingsHistory';
 import TransactionHistory from './screens/TransactionHistory';
+import AuthCodeScreen from './screens/AuthCodeScreen';
+import ResetAuthCodeScreen from './screens/ResetAuthCodeScreen';
+import ConfirmResetAuthCodeScreen from './screens/ConfirmResetAuthCodeScreen';
 import { getUserDetails } from './api';
-import Preloader from './components/Preloader'; // Importer le préchargeur
+import Preloader from './components/Preloader';
 
 const Stack = createNativeStackNavigator();
 
@@ -60,13 +63,16 @@ const App = () => {
   };
 
   if (isLoading || isPreloaderVisible) {
-    //return <Preloader onFinished={handlePreloaderFinished} />;
+    return <Preloader onFinished={handlePreloaderFinished} />;
   }
 
   return (
     <View style={styles.container}>
       <NavigationContainer>
-        <Stack.Navigator initialRouteName={isAuthenticated ? "Home" : "Login"}>
+        <Stack.Navigator initialRouteName="AuthCodeScreen">
+          <Stack.Screen name="AuthCodeScreen" component={AuthCodeScreen} options={{ headerShown: false }} />
+          <Stack.Screen name="ResetAuthCode" component={ResetAuthCodeScreen} options={{ headerShown: false }} />
+          <Stack.Screen name="ConfirmResetAuthCode" component={ConfirmResetAuthCodeScreen} options={{ headerShown: false }} />
           <Stack.Screen name="Home" component={Home} options={{ headerShown: false }} />
           <Stack.Screen name="Profile" component={Profile} options={{ headerShown: false }} />
           <Stack.Screen name="Budgets" component={Budgets} options={{ headerShown: false }} />

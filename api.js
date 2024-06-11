@@ -216,3 +216,33 @@ export const getActiveCurrency = async () => {
     throw error.response ? error.response.data : error.message;
   }
 };
+
+// Envoi d'un e-mail avec le code de réinitialisation
+export const sendResetCodeEmail = async (email) => {
+  try {
+    const response = await axios.post(`${API_BASE_URL}/auth/send-reset-code`, { email });
+    return response.data;
+  } catch (error) {
+    throw error.response ? error.response.data : error.message;
+  }
+};
+
+// Vérification du code de réinitialisation
+export const verifyResetCode = async ({ resetCode, email }) => {
+  try {
+    const response = await axios.post(`${API_BASE_URL}/auth/verify-reset-code`, { resetCode, email });
+    return response.data.isValid;
+  } catch (error) {
+    throw error.response ? error.response.data : error.message;
+  }
+};
+
+// Mise à jour du code de sécurité
+export const updateAuthCode = async (email, resetCode, newCode) => {
+  try {
+    const response = await axios.post(`${API_BASE_URL}/auth/update-code`, { email, resetCode, newCode });
+    return response.data;
+  } catch (error) {
+    throw error.response ? error.response.data : error.message;
+  }
+};
